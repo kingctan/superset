@@ -59,6 +59,7 @@ def runserver(debug, address, port, timeout, workers):
             "-b {address}:{port} "
             "--limit-request-line 0 "
             "--limit-request-field_size 0 "
+            "-c .config.gunicorn"
             "superset:app").format(**locals())
         print("Starting server with command: " + cmd)
         Popen(cmd, shell=True).wait()
