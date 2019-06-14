@@ -1,21 +1,33 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+# pylint: disable=C,R,W
 """Defines the templating context for SQL Lab"""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
+from datetime import datetime, timedelta
 import inspect
+import json
+import random
+import time
+import uuid
+
+from dateutil.relativedelta import relativedelta
+from flask import g, request
 from jinja2.sandbox import SandboxedEnvironment
 
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-import time
-import textwrap
-import uuid
-import random
-
 from superset import app
-from superset.utils import SupersetTemplateException
 
 config = app.config
 BASE_CONTEXT = {
@@ -29,8 +41,94 @@ BASE_CONTEXT = {
 BASE_CONTEXT.update(config.get('JINJA_CONTEXT_ADDONS', {}))
 
 
-class BaseTemplateProcessor(object):
+def url_param(param, default=None):
+    """Read a url or post parameter and use it in your SQL Lab query
 
+    When in SQL Lab, it's possible to add arbitrary URL "query string"
+    parameters, and use those in your SQL code. For instance you can
+    alter your url and add `?foo=bar`, as in
+    `{domain}/superset/sqllab?foo=bar`. Then if your query is something like
+    SELECT * FROM foo = '{{ url_param('foo') }}', it will be parsed at
+    runtime and replaced by the value in the URL.
+
+    As you create a visualization form this SQL Lab query, you can pass
+    parameters in the explore view as well as from the dashboard, and
+    it should carry through to your queries.
+
+    :param param: the parameter to lookup
+    :type param: str
+    :param default: the value to return in the absence of the parameter
+    :type default: str
+    """
+    if request.args.get(param):
+        return request.args.get(param, default)
+    # Supporting POST as well as get
+    if request.form.get('form_data'):
+        form_data = json.loads(request.form.get('form_data'))
+        url_params = form_data.get('url_params') or {}
+        return url_params.get(param, default)
+    return default
+
+
+def current_user_id():
+    """The id of the user who is currently logged in"""
+    if hasattr(g, 'user') and g.user:
+        return g.user.id
+
+
+def current_username():
+    """The username of the user who is currently logged in"""
+    if g.user:
+        return g.user.username
+
+
+def filter_values(column, default=None):
+    """ Gets a values for a particular filter as a list
+
+    This is useful if:
+        - you want to use a filter box to filter a query where the name of filter box
+          column doesn't match the one in the select statement
+        - you want to have the ability for filter inside the main query for speed purposes
+
+    This searches for "filters" and "extra_filters" in form_data for a match
+
+    Usage example:
+        SELECT action, count(*) as times
+        FROM logs
+        WHERE action in ( {{ "'" + "','".join(filter_values('action_type')) + "'" }} )
+        GROUP BY 1
+
+    :param column: column/filter name to lookup
+    :type column: str
+    :param default: default value to return if there's no matching columns
+    :type default: str
+    :return: returns a list of filter values
+    :type: list
+    """
+    form_data = json.loads(request.form.get('form_data', '{}'))
+    return_val = []
+    for filter_type in ['filters', 'extra_filters']:
+        if filter_type not in form_data:
+            continue
+
+        for f in form_data[filter_type]:
+            if f['col'] == column:
+                if isinstance(f['val'], list):
+                    for v in f['val']:
+                        return_val.append(v)
+                else:
+                    return_val.append(f['val'])
+
+    if return_val:
+        return return_val
+
+    if default:
+        return [default]
+    else:
+        return []
+
+
+class BaseTemplateProcessor(object):
     """Base class for database-specific jinja context
 
     There's this bit of magic in ``process_template`` that instantiates only
@@ -46,7 +144,7 @@ class BaseTemplateProcessor(object):
     """
     engine = None
 
-    def __init__(self, database=None, query=None, table=None):
+    def __init__(self, database=None, query=None, table=None, **kwargs):
         self.database = database
         self.query = query
         self.schema = None
@@ -54,13 +152,20 @@ class BaseTemplateProcessor(object):
             self.schema = query.schema
         elif table:
             self.schema = table.schema
-        self.context = {}
+        self.context = {
+            'url_param': url_param,
+            'current_user_id': current_user_id,
+            'current_username': current_username,
+            'filter_values': filter_values,
+            'form_data': {},
+        }
+        self.context.update(kwargs)
         self.context.update(BASE_CONTEXT)
         if self.engine:
             self.context[self.engine] = self
         self.env = SandboxedEnvironment()
 
-    def process_template(self, sql):
+    def process_template(self, sql, **kwargs):
         """Processes a sql template
 
         >>> sql = "SELECT '{{ datetime(2017, 1, 1).isoformat() }}'"
@@ -68,7 +173,8 @@ class BaseTemplateProcessor(object):
         "SELECT '2017-01-01T00:00:00'"
         """
         template = self.env.from_string(sql)
-        return template.render(self.context)
+        kwargs.update(self.context)
+        return template.render(kwargs)
 
 
 class PrestoTemplateProcessor(BaseTemplateProcessor):
@@ -80,118 +186,27 @@ class PrestoTemplateProcessor(BaseTemplateProcessor):
     engine = 'presto'
 
     @staticmethod
-    def _partition_query(table_name, limit=0, order_by=None, filters=None):
-        """Returns a partition query
-
-        :param table_name: the name of the table to get partitions from
-        :type table_name: str
-        :param limit: the number of partitions to be returned
-        :type limit: int
-        :param order_by: a list of tuples of field name and a boolean
-            that determines if that field should be sorted in descending
-            order
-        :type order_by: list of (str, bool) tuples
-        :param filters: a list of filters to apply
-        :param filters: dict of field anme  and filter value combinations
-        """
-        limit_clause = "LIMIT {}".format(limit) if limit else ''
-        order_by_clause = ''
-        if order_by:
-            l = []
-            for field, desc in order_by:
-                l.append(field + ' DESC' if desc else '')
-            order_by_clause = 'ORDER BY ' + ', '.join(l)
-
-        where_clause = ''
-        if filters:
-            l = []
-            for field, value in filters.items():
-                l.append("{field} = '{value}'".format(**locals()))
-            where_clause = 'WHERE ' + ' AND '.join(l)
-
-        sql = textwrap.dedent("""\
-            SHOW PARTITIONS FROM {table_name}
-            {where_clause}
-            {order_by_clause}
-            {limit_clause}
-        """).format(**locals())
-        return sql
-
-    @staticmethod
     def _schema_table(table_name, schema):
         if '.' in table_name:
             schema, table_name = table_name.split('.')
         return table_name, schema
 
     def latest_partition(self, table_name):
-        """Returns the latest (max) partition value for a table
-
-        :param table_name: the name of the table, can be just the table
-            name or a fully qualified table name as ``schema_name.table_name``
-        :type table_name: str
-        >>> latest_partition('foo_table')
-        '2018-01-01'
-        """
         table_name, schema = self._schema_table(table_name, self.schema)
-        indexes = self.database.get_indexes(table_name, schema)
-        if len(indexes[0]['column_names']) < 1:
-            raise SupersetTemplateException(
-                "The table should have one partitioned field")
-        elif len(indexes[0]['column_names']) > 1:
-            raise SupersetTemplateException(
-                "The table should have a single partitioned field "
-                "to use this function. You may want to use "
-                "`presto.latest_sub_partition`")
-        part_field = indexes[0]['column_names'][0]
-        sql = self._partition_query(table_name, 1, [(part_field, True)])
-        df = self.database.get_df(sql, schema)
-        return df.to_records(index=False)[0][0]
+        return self.database.db_engine_spec.latest_partition(
+            table_name, schema, self.database)[1]
 
     def latest_sub_partition(self, table_name, **kwargs):
-        """Returns the latest (max) partition value for a table
-
-        A filtering criteria should be passed for all fields that are
-        partitioned except for the field to be returned. For example,
-        if a table is partitioned by (``ds``, ``event_type`` and
-        ``event_category``) and you want the latest ``ds``, you'll want
-        to provide a filter as keyword arguments for both
-        ``event_type`` and ``event_category`` as in
-        ``latest_sub_partition('my_table',
-            event_category='page', event_type='click')``
-
-        :param table_name: the name of the table, can be just the table
-            name or a fully qualified table name as ``schema_name.table_name``
-        :type table_name: str
-        :param kwargs: keyword arguments define the filtering criteria
-            on the partition list. There can be many of these.
-        :type kwargs: str
-        >>> latest_sub_partition('sub_partition_table', event_type='click')
-        '2018-01-01'
-        """
         table_name, schema = self._schema_table(table_name, self.schema)
-        indexes = self.database.get_indexes(table_name, schema)
-        part_fields = indexes[0]['column_names']
-        for k in kwargs.keys():
-            if k not in k in part_fields:
-                msg = "Field [{k}] is not part of the partionning key"
-                raise SupersetTemplateException(msg)
-        if len(kwargs.keys()) != len(part_fields) - 1:
-            msg = (
-                "A filter needs to be specified for {} out of the "
-                "{} fields."
-            ).format(len(part_fields)-1, len(part_fields))
-            raise SupersetTemplateException(msg)
+        return self.database.db_engine_spec.latest_sub_partition(
+            table_name=table_name,
+            schema=schema,
+            database=self.database,
+            **kwargs)
 
-        for field in part_fields:
-            if field not in kwargs.keys():
-                field_to_return = field
 
-        sql = self._partition_query(
-            table_name, 1, [(field_to_return, True)], kwargs)
-        df = self.database.get_df(sql, schema)
-        if df.empty:
-            return ''
-        return df.to_dict()[field_to_return][0]
+class HiveTemplateProcessor(PrestoTemplateProcessor):
+    engine = 'hive'
 
 
 template_processors = {}
@@ -202,6 +217,6 @@ for k in keys:
         template_processors[o.engine] = o
 
 
-def get_template_processor(database, table=None, query=None):
+def get_template_processor(database, table=None, query=None, **kwargs):
     TP = template_processors.get(database.backend, BaseTemplateProcessor)
-    return TP(database=database, table=table, query=query)
+    return TP(database=database, table=table, query=query, **kwargs)

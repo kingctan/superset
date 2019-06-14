@@ -1,17 +1,31 @@
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 Superset
 =========
 
-[![Build Status](https://travis-ci.org/airbnb/superset.svg?branch=master)](https://travis-ci.org/airbnb/superset)
+[![Build Status](https://travis-ci.org/apache/incubator-superset.svg?branch=master)](https://travis-ci.org/apache/incubator-superset)
 [![PyPI version](https://badge.fury.io/py/superset.svg)](https://badge.fury.io/py/superset)
-[![Coverage Status](https://coveralls.io/repos/airbnb/superset/badge.svg?branch=master&service=github)](https://coveralls.io/github/airbnb/superset?branch=master)
-[![JS Test Coverage](https://codeclimate.com/github/airbnb/superset/badges/coverage.svg)](https://codeclimate.com/github/airbnb/superset/coverage)
-[![Code Health](https://landscape.io/github/airbnb/superset/master/landscape.svg?style=flat)](https://landscape.io/github/airbnb/superset/master)
-[![Code Climate](https://codeclimate.com/github/airbnb/superset/badges/gpa.svg)](https://codeclimate.com/github/airbnb/superset)
+[![Coverage Status](https://codecov.io/github/apache/incubator-superset/coverage.svg?branch=master)](https://codecov.io/github/apache/incubator-superset)
 [![PyPI](https://img.shields.io/pypi/pyversions/superset.svg?maxAge=2592000)](https://pypi.python.org/pypi/superset)
-[![Requirements Status](https://requires.io/github/airbnb/superset/requirements.svg?branch=master)](https://requires.io/github/airbnb/superset/requirements/?branch=master)
-[![Join the chat at https://gitter.im/airbnb/superset](https://badges.gitter.im/airbnb/superset.svg)](https://gitter.im/airbnb/superset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Documentation](https://img.shields.io/badge/docs-airbnb.io-blue.svg)](http://airbnb.io/superset/)
-[![dependencies Status](https://david-dm.org/airbnb/superset/status.svg?path=superset/assets)](https://david-dm.org/airbnb/superset?path=superset/assets)
+[![Join the chat at https://gitter.im/airbnb/superset](https://badges.gitter.im/apache/incubator-superset.svg)](https://gitter.im/airbnb/superset?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Documentation](https://img.shields.io/badge/docs-apache.org-blue.svg)](https://superset.incubator.apache.org)
+[![dependencies Status](https://david-dm.org/apache/incubator-superset/status.svg?path=superset/assets)](https://david-dm.org/apache/incubator-superset?path=superset/assets)
 
 <img
   src="https://cloud.githubusercontent.com/assets/130878/20946612/49a8a25c-bbc0-11e6-8314-10bef902af51.png"
@@ -19,8 +33,8 @@ Superset
   width="500"
 />
 
-**Superset** is a data exploration platform designed to be visual, intuitive
-and interactive.
+**Apache Superset** (incubating) is a modern, enterprise-ready
+business intelligence web application
 
 [this project used to be named **Caravel**, and **Panoramix** in the past]
 
@@ -29,41 +43,45 @@ Screenshots & Gifs
 ------------------
 
 **View Dashboards**
-![superset-dashboard](https://cloud.githubusercontent.com/assets/130878/20371438/a703a2a0-ac19-11e6-80c4-00a47c2eb644.gif)
 
-<br/>
-**View/Edit a Slice**
-![superset-explore-slice](https://cloud.githubusercontent.com/assets/130878/20372732/410392f4-ac22-11e6-9c6d-3ef512e81212.gif)
+<kbd><img title="View Dashboards" src="https://raw.githubusercontent.com/apache/incubator-superset/master/superset/assets/images/screenshots/bank_dash.png"></kbd><br/>
 
-<br/>
-**Query and Visualize with SQL Lab**
-![superset-sql-lab-visualization](https://cloud.githubusercontent.com/assets/130878/20372911/7c3b3358-ac23-11e6-8f24-923ef1b35715.gif)
+**Slice & dice your data**
 
-<br/>
-![superset-dashboard-misc](https://cloud.githubusercontent.com/assets/130878/20234704/0f40778c-a835-11e6-9556-983a62ea061b.png)
+<kbd><img title="Slice & dice your data" src="https://raw.githubusercontent.com/apache/incubator-superset/master/superset/assets/images/screenshots/explore.png"></kbd><br/>
 
-![superset-edit-table](https://cloud.githubusercontent.com/assets/130878/20234705/0f415c88-a835-11e6-8b03-f7c35d56dd7d.png)
+**Query and visualize your data with SQL Lab**
 
-![superset-query-search](https://cloud.githubusercontent.com/assets/130878/20234706/0f430a10-a835-11e6-8a0d-8b26cc2e6bbd.png)
+<kbd><img title="SQL Lab" src="https://raw.githubusercontent.com/apache/incubator-superset/master/superset/assets/images/screenshots/sqllab.png"></kbd><br/>
 
-Superset
----------
-Superset's main goal is to make it easy to slice, dice and visualize data.
-It empowers users to perform **analytics at the speed of thought**.
+**Visualize geospatial data with deck.gl**
+
+<kbd><img title="Geospatial" src="https://raw.githubusercontent.com/apache/incubator-superset/master/superset/assets/images/screenshots/deckgl_dash.png"></kbd><br/>
+
+**Choose from a wide array of visualizations**
+
+<kbd><img title="Visualizations" src="https://raw.githubusercontent.com/apache/incubator-superset/master/superset/assets/images/screenshots/visualizations.png"></kbd><br/>
+
+Apache Superset
+---------------
+Apache Superset is a data exploration and visualization web application.
 
 Superset provides:
-* A quick way to intuitively visualize datasets by allowing users to create
-    and share interactive dashboards
-* A rich set of visualizations to analyze your data, as well as a flexible
-    way to extend the capabilities
+* An intuitive interface to explore and visualize datasets, and
+    create interactive dashboards.
+* A wide array of beautiful visualizations to showcase your data.
+* Easy, code-free, user flows to drill down and slice and dice the data
+    underlying exposed dashboards. The dashboards and charts acts as a starting
+    point for deeper analysis.
+* A state of the art SQL editor/IDE exposing a rich metadata browser, and
+    an easy workflow to create visualizations out of any result set.
 * An extensible, high granularity security model allowing intricate rules
-    on who can access which features, and integration with major
-    authentication providers (database, OpenID, LDAP, OAuth & REMOTE_USER
-    through Flask AppBuiler)
-* A simple semantic layer, allowing to control how data sources are
-    displayed in the UI, by defining which fields should show up in
-    which dropdown and which aggregation and function (metrics) are
-    made available to the user
+    on who can access which product features and datasets.
+    Integration with major
+    authentication backends (database, OpenID, LDAP, OAuth, REMOTE_USER, ...)
+* A lightweight semantic layer, allowing to control how data sources are
+    exposed to the user by defining dimensions and metrics
+* Out of the box support for most SQL-speaking databases
 * Deep integration with Druid allows for Superset to stay blazing fast while
     slicing and dicing large, realtime datasets
 * Fast loading dashboards with configurable caching
@@ -72,15 +90,24 @@ Superset provides:
 Database Support
 ----------------
 
-Superset was originally designed on top of Druid.io, but quickly broadened
-its scope to support other databases through the use of SQLAlchemy, a Python
+Superset speaks many SQL dialects through SQLAlchemy, a Python
 ORM that is compatible with
-[most common databases](http://docs.sqlalchemy.org/en/rel_1_0/core/engines.html).
+[most common databases](https://docs.sqlalchemy.org/en/rel_1_2/core/engines.html).
 
+A list of currently supported SQL databases can be found
+[here](https://superset.incubator.apache.org/#databases).
 
-What is Druid?
--------------
-From their website at http://druid.io
+Apache Druid (Incubating)!
+------
+
+On top of having the ability to query your relational databases,
+Superset ships with deep integration with Druid (a real time distributed
+column-store). When querying Druid,
+Superset can query humongous amounts of data on top of real time dataset.
+Note that Superset does not require Druid in any way to function, it's simply
+another database backend that it can query.
+
+Here's a description of Druid from the http://druid.io website:
 
 *Druid is an open-source analytics data store designed for
 business intelligence (OLAP) queries on event data. Druid provides low
@@ -93,50 +120,90 @@ power analytic dashboards and applications.*
 Installation & Configuration
 ----------------------------
 
-[See in the documentation](http://airbnb.io/superset/installation.html)
-
-
-More screenshots
-----------------
-
-![superset-security-menu](https://cloud.githubusercontent.com/assets/130878/20234707/0f565886-a835-11e6-9277-b4f5f4aa2fcc.png)
-
-![superset-slice-bubble](https://cloud.githubusercontent.com/assets/130878/20234708/0f57f3d0-a835-11e6-8268-fcefe8f868c8.png)
-
-![superset-slice-map](https://cloud.githubusercontent.com/assets/130878/20234709/0f5a5a44-a835-11e6-987a-1b6f8ac9922b.png)
-
-![superset-slice-multiline](https://cloud.githubusercontent.com/assets/130878/20234710/0f632d68-a835-11e6-98d1-542dcb618193.png)
-
-![superset-slice-sankey](https://cloud.githubusercontent.com/assets/130878/20234711/0f639136-a835-11e6-8721-fe5e48dab8e7.png)
-
-![superset-slice-view](https://cloud.githubusercontent.com/assets/130878/20234712/0f63c4c6-a835-11e6-8595-6091a6428fa9.png)
-
-![superset-sql-lab-2](https://cloud.githubusercontent.com/assets/130878/20234713/0f67b856-a835-11e6-9d50-7a52168f66fd.png)
-
-![superset-sql-lab](https://cloud.githubusercontent.com/assets/130878/20234714/0f68f45a-a835-11e6-9467-f47ad0af7e79.png)
+[See in the documentation](https://superset.incubator.apache.org/installation.html)
 
 
 Resources
 -------------
-* [Superset Google Group](https://groups.google.com/forum/#!forum/airbnb_superset)
+* [Mailing list](https://lists.apache.org/list.html?dev@superset.apache.org)
 * [Gitter (live chat) Channel](https://gitter.im/airbnb/superset)
 * [Docker image](https://hub.docker.com/r/amancevice/superset/) (community contributed)
 * [Slides from Strata (March 2016)](https://drive.google.com/open?id=0B5PVE0gzO81oOVJkdF9aNkJMSmM)
-
-
-Tip of the Hat
---------------
-
-Superset would not be possible without these great frameworks / libs
-
-* Flask App Builder - Allowing us to focus on building the app quickly while
-getting the foundation for free
-* The Flask ecosystem - Simply amazing. So much Plug, easy play.
-* NVD3 - One of the best charting libraries out there
-* Much more, check out the `install_requires` section in the [setup.py](https://github.com/airbnb/superset/blob/master/setup.py) file!
+* [Stackoverflow tag](https://stackoverflow.com/questions/tagged/apache-superset)
+* [Join our Slack](https://join.slack.com/t/apache-superset/shared_invite/enQtNDMxMDY5NjM4MDU0LTc2Y2QwYjE4NGYwNzQyZWUwYTExZTdiZDMzMWQwZjc2YmJmM2QyMDkwMGVjZTA4N2I2MzUxZTk2YmE5MWRhZWE)
+* [DEPRECATED Google Group](https://groups.google.com/forum/#!forum/airbnb_superset)
 
 
 Contributing
 ------------
 
-Interested in contributing? Casual hacking? Check out  [Contributing.MD](https://github.com/airbnb/superset/blob/master/CONTRIBUTING.md)
+Interested in contributing? Casual hacking? Check out
+[Contributing.MD](https://github.com/airbnb/superset/blob/master/CONTRIBUTING.md)
+
+
+Who uses Apache Superset (incubating)?
+--------------------------------------
+
+Here's a list of organizations who have taken the time to send a PR to let
+the world know they are using Superset. Join our growing community!
+
+ 1. [6play](https://www.6play.fr)
+ 1. [AiHello](https://www.aihello.com)
+ 1. [Airbnb](https://github.com/airbnb)
+ 1. [Airboxlab](https://foobot.io)
+ 1. [Aktia Bank plc](https://www.aktia.com)
+ 1. [American Express](https://www.americanexpress.com)
+ 1. [Amino](https://amino.com)
+ 1. [Apollo GraphQL](https://www.apollographql.com/)
+ 1. [Ascendica Development](http://ascendicadevelopment.com)
+ 1. [Astronomer](https://www.astronomer.io)
+ 1. [Brilliant.org](https://brilliant.org/)
+ 1. [Capital Service S.A.](http://capitalservice.pl)
+ 1. [Clark.de](http://clark.de/)
+ 1. [Cloudsmith](https://cloudsmith.io)
+ 1. [CnOvit](http://www.cnovit.com/)
+ 1. [Dial Once](https://www.dial-once.com/en/)
+ 1. [Digit Game Studios](https://www.digitgaming.com/)
+ 1. [Douban](https://www.douban.com/)
+ 1. [Endress+Hauser](http://www.endress.com/)
+ 1. [FBK - ICT center](http://ict.fbk.eu)
+ 1. [Faasos](http://faasos.com/)
+ 1. [Fordeal](http://www.fordeal.com)
+ 1. [GfK Data Lab](http://datalab.gfk.com)
+ 1. [Grassroot](https://www.grassrootinstitute.org/)
+ 1. [Hostnfly](https://www.hostnfly.com/)
+ 1. [HuiShouBao](http://www.huishoubao.com/)
+ 1. [Intercom](https://www.intercom.com/)
+ 1. [jampp](https://jampp.com/)
+ 1. [Konfío](http://konfio.mx)
+ 1. [Kuaishou](https://www.kuaishou.com/)
+ 1. [Lime](https://www.limebike.com/)
+ 1. [Living Goods](https://www.livinggoods.org)
+ 1. [Lyft](https://www.lyft.com/)
+ 1. [Maieutical Labs](https://maieuticallabs.it)
+ 1. [Myra Labs](http://www.myralabs.com/)
+ 1. [Now](https://www.now.vn/)
+ 1. [PeopleDoc](https://www.people-doc.com)
+ 1. [Ona](https://ona.io)
+ 1. [Pronto Tools](http://www.prontotools.io)
+ 1. [QPID Health](http://www.qpidhealth.com/    )
+ 1. [Qunar](https://www.qunar.com/)
+ 1. [Scoot](https://scoot.co/)
+ 1. [ScopeAI](https://www.getscopeai.com)
+ 1. [Shopee](https://shopee.sg)
+ 1. [Shopkick](https://www.shopkick.com)
+ 1. [Steamroot](https://streamroot.io/)
+ 1. [Showmax](https://tech.showmax.com)
+ 1. [Tails.com](https://tails.com)
+ 1. [Tenable](https://www.tenable.com)
+ 1. [THEICONIC](http://theiconic.com.au/)
+ 1. [Tobii](http://www.tobii.com/)
+ 1. [Tooploox](https://www.tooploox.com/)
+ 1. [TrustMedis](https://trustmedis.com)
+ 1. [Twitter](https://twitter.com/)
+ 1. [Udemy](https://www.udemy.com/)
+ 1. [VIPKID](https://www.vipkid.com.cn/)
+ 1. [Windsor.ai](https://www.windsor.ai/)
+ 1. [Yahoo!](https://yahoo.com/)
+ 1. [Zaihang](http://www.zaih.com/)
+ 1. [Zalando](https://www.zalando.com)
